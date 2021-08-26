@@ -1,43 +1,32 @@
-import urllib.request, json
 
 import requests
 
-'''
-33-joints
-'landmark_id': int
-'x': float
-'y': float
-'z': float
-'visibility': float
-'''
+from utils import *
 
-def get_json(method = 1, url="http://127.0.0.1:5000/api/v1/pose/tf"):
+def get_json(method, url="http://127.0.0.1:5000/api/v1/motion/"):
+    # === call with requests POST
     if method == 1:
-        # call with urllib
-        with urllib.request.urlopen(url) as url_:
-            data = json.loads(url_.read().decode())
-            # print(data)
-            print(data[1]['x'])
-    elif method == 2:
-        # call with requests
-        r = requests.get(url)
-        data = r.json()
-        # print(data)
-        print(data[1]['x'])
-
-    elif method == 3:
-        url = 'http://127.0.0.1:5000/stream/generate'
-        i = int(input("i: "))
-        # call with requests POST
-        r = requests.post(url, json = {'i': i})
+        # static image
+        pose_result = run_pose_est()
+        json_input = []
+        for i in range(len(pose_result)):
+            json_input.append({
+                'landmark_id': i,
+                'x': pose_result[i].x,
+                'y': pose_result[i].y,
+                'z': pose_result[i].z,
+                'visibility': pose_result[i].visibility
+            })
+        r = requests.post(url, json = json_input)
         data = r.json()
         print(data)
-        for j in range(i):
-            r = requests.post(url, json = {'i': j})
-            data = r.json()
-            print(data)
+    elif method == 2:
+        # open cv video
+        data = 'not finished'
+        print(data)
+    else:
+        print("Error: unknown method")
 
 if __name__ == '__main__':
-    method = input('Method: ')
-    get_json(int(method))
-    # get_json(int(method), 'http://ec2-13-250-24-24.ap-southeast-1.compute.amazonaws.com:8000/api/v1/pose/tf')
+    method = int(input("Method (1: image, 2: video): "))
+    get_json(method)

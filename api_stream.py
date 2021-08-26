@@ -72,6 +72,7 @@ def api_stream_img():
         # return output
 
         results = []
+        # may not need the landmark_id
         for i in range(len(pose_result)):
             results.append({
                 'landmark_id': i,
@@ -85,6 +86,14 @@ def api_stream_img():
 
     else:   # GET
         return 'GET request page'
+
+@app.route('/stream/skeleton', methods=['GET', 'POST'])
+def api_stream_skeleton():
+    if request.method == 'POST':
+        # get skeleton landmarks json and return somethings with json
+        return 1
+    else:   # GET
+        return 'This is GET request page, please use POST request'
 
 if __name__ == '__main__':
     app.run()
